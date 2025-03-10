@@ -1,0 +1,20 @@
+th{
+	color:yellow;
+	letter-spacing:1px;
+	text-align:center;
+	background-color:dark-yellow;
+}
+summary{
+	color:green;
+	font-family:"rock salt",cursive;
+}
+table{
+	background-color:black;
+	border:yellow;
+}
+td{
+	color:red;
+	text-align:center;
+	background-color:rose;
+}
+
