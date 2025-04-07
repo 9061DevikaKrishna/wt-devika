@@ -1,483 +1,217 @@
-#include<stdio.h>  
+#include <stdio.h>
 
-2.	#include<stdlib.h>  
+#include <stdlib.h>
 
-3.	struct node   
 
-4.	{  
 
-5.	    int data;  
+struct node {
 
-6.	    struct node *next;   
+  int key;
 
-7.	};  
+  struct node *left, *right;
 
-8.	struct node *head;    
+};
 
-9.	void beginsert ();   
 
-10.	void lastinsert ();  
 
-11.	void randominsert();  
+// Create a node
 
-12.	void begin_delete();  
+struct node *newNode(int item) {
 
-13.	void last_delete();  
+  struct node *temp = (struct node *)malloc(sizeof(struct node));
 
-14.	void random_delete();  
+  temp->key = item;
 
-15.	void display();  
+  temp->left = temp->right = NULL;
 
-16.	void search();  
+  return temp;
 
-17.	void main ()  
+}
 
-18.	{  
 
-19.	    int choice =0;  
 
-20.	    while(choice != 7)   
+// Inorder Traversal
 
-21.	    {  
+void inorder(struct node *root) {
 
-22.	        printf("\n*********Main Menu*********\n");  
+  if (root != NULL) {
 
-23.	        printf("\nChoose one option from the following list ...\n");  
+    // Traverse left
 
-24.	        printf("\n===============================================\n");  
+    inorder(root->left);
 
-25.	        printf("\n1.Insert in begining\n2.Insert at last\n3.Delete from Beginning\n4.Delete from last\n5.Search for an element\n6.Show\n7.Exit\n");  
 
-26.	        printf("\nEnter your choice?\n");         
 
-27.	        scanf("\n%d",&choice);  
+    // Traverse root
 
-28.	        switch(choice)  
+    printf("%d -> ", root->key);
 
-29.	        {  
 
-30.	            case 1:  
 
-31.	            beginsert();      
+    // Traverse right
 
-32.	            break;  
+    inorder(root->right);
 
-33.	            case 2:  
+  }
 
-34.	            lastinsert();         
+}
 
-35.	            break;  
 
-36.	            case 3:  
 
-37.	            begin_delete();       
+// Insert a node
 
-38.	            break;  
+struct node *insert(struct node *node, int key) {
 
-39.	            case 4:  
+  // Return a new node if the tree is empty
 
-40.	            last_delete();        
+  if (node == NULL) return newNode(key);
 
-41.	            break;  
 
-42.	            case 5:  
 
-43.	            search();         
+  // Traverse to the right place and insert the node
 
-44.	            break;  
+  if (key < node->key)
 
-45.	            case 6:  
+    node->left = insert(node->left, key);
 
-46.	            display();        
+  else
 
-47.	            break;  
+    node->right = insert(node->right, key);
 
-48.	            case 7:  
 
-49.	            exit(0);  
 
-50.	            break;  
+  return node;
 
-51.	            default:  
+}
 
-52.	            printf("Please enter valid choice..");  
 
-53.	        }  
 
-54.	    }  
+// Find the inorder successor
 
-55.	}  
+struct node *minValueNode(struct node *node) {
 
-56.	void beginsert()  
+  struct node *current = node;
 
-57.	{  
 
-58.	    struct node *ptr,*temp;   
 
-59.	    int item;   
+  // Find the leftmost leaf
 
-60.	    ptr = (struct node *)malloc(sizeof(struct node));  
+  while (current && current->left != NULL)
 
-61.	    if(ptr == NULL)  
+    current = current->left;
 
-62.	    {  
 
-63.	        printf("\nOVERFLOW");  
 
-64.	    }  
+  return current;
 
-65.	    else   
+}
 
-66.	    {  
 
-67.	        printf("\nEnter the node data?");  
 
-68.	        scanf("%d",&item);  
+// Deleting a node
 
-69.	        ptr -> data = item;  
+struct node *deleteNode(struct node *root, int key) {
 
-70.	        if(head == NULL)  
+  // Return if the tree is empty
 
-71.	        {  
+  if (root == NULL) return root;
 
-72.	            head = ptr;  
 
-73.	            ptr -> next = head;  
 
-74.	        }  
+  // Find the node to be deleted
 
-75.	        else   
+  if (key < root->key)
 
-76.	        {     
+    root->left = deleteNode(root->left, key);
 
-77.	            temp = head;  
+  else if (key > root->key)
 
-78.	            while(temp->next != head)  
+    root->right = deleteNode(root->right, key);
 
-79.	                temp = temp->next;  
 
-80.	            ptr->next = head;   
 
-81.	            temp -> next = ptr;   
+  else {
 
-82.	            head = ptr;  
+    // If the node is with only one child or no child
 
-83.	        }   
+    if (root->left == NULL) {
 
-84.	        printf("\nnode inserted\n");  
+      struct node *temp = root->right;
 
-85.	    }  
+      free(root);
 
-86.	              
+      return temp;
 
-87.	}  
+    } else if (root->right == NULL) {
 
-88.	void lastinsert()  
+      struct node *temp = root->left;
 
-89.	{  
+      free(root);
 
-90.	    struct node *ptr,*temp;   
+      return temp;
 
-91.	    int item;  
+    }
 
-92.	    ptr = (struct node *)malloc(sizeof(struct node));  
 
-93.	    if(ptr == NULL)  
 
-94.	    {  
+    // If the node has two children
 
-95.	        printf("\nOVERFLOW\n");  
+    struct node *temp = minValueNode(root->right);
 
-96.	    }  
 
-97.	    else  
 
-98.	    {  
+    // Place the inorder successor in position of the node to be deleted
 
-99.	        printf("\nEnter Data?");  
+    root->key = temp->key;
 
-100.	        scanf("%d",&item);  
 
-101.	        ptr->data = item;  
 
-102.	        if(head == NULL)  
+    // Delete the inorder successor
 
-103.	        {  
+    root->right = deleteNode(root->right, temp->key);
 
-104.	            head = ptr;  
+  }
 
-105.	            ptr -> next = head;    
+  return root;
 
-106.	        }  
+}
 
-107.	        else  
 
-108.	        {  
 
-109.	            temp = head;  
+// Main function code
 
-110.	            while(temp -> next != head)  
+int main() {
 
-111.	            {  
+  struct node *root = NULL;
 
-112.	                temp = temp -> next;  
+  root = insert(root, 8);
 
-113.	            }  
+  root = insert(root, 3);
 
-114.	            temp -> next = ptr;   
+  root = insert(root, 1);
 
-115.	            ptr -> next = head;  
+  root = insert(root, 6);
 
-116.	        }  
+  root = insert(root, 7);
 
-117.	          
+  root = insert(root, 10);
 
-118.	        printf("\nnode inserted\n");  
+  root = insert(root, 14);
 
-119.	    }  
+  root = insert(root, 4);
 
-120.	  
 
-121.	}  
 
-122.	  
+  printf("Inorder traversal: ");
 
-123.	void begin_delete()  
+  inorder(root);
 
-124.	{  
 
-125.	    struct node *ptr;   
 
-126.	    if(head == NULL)  
+  printf("\nAfter deleting 10\n");
 
-127.	    {  
+  root = deleteNode(root, 10);
 
-128.	        printf("\nUNDERFLOW");    
+  printf("Inorder traversal: ");
 
-129.	    }  
-
-130.	    else if(head->next == head)  
-
-131.	    {  
-
-132.	        head = NULL;  
-
-133.	        free(head);  
-
-134.	        printf("\nnode deleted\n");  
-
-135.	    }  
-
-136.	      
-
-137.	    else  
-
-138.	    {   ptr = head;   
-
-139.	        while(ptr -> next != head)  
-
-140.	            ptr = ptr -> next;   
-
-141.	        ptr->next = head->next;  
-
-142.	        free(head);  
-
-143.	        head = ptr->next;  
-
-144.	        printf("\nnode deleted\n");  
-
-145.	  
-
-146.	    }  
-
-147.	}  
-
-148.	void last_delete()  
-
-149.	{  
-
-150.	    struct node *ptr, *preptr;  
-
-151.	    if(head==NULL)  
-
-152.	    {  
-
-153.	        printf("\nUNDERFLOW");  
-
-154.	    }  
-
-155.	    else if (head ->next == head)  
-
-156.	    {  
-
-157.	        head = NULL;  
-
-158.	        free(head);  
-
-159.	        printf("\nnode deleted\n");  
-
-160.	  
-
-161.	    }  
-
-162.	    else   
-
-163.	    {  
-
-164.	        ptr = head;  
-
-165.	        while(ptr ->next != head)  
-
-166.	        {  
-
-167.	            preptr=ptr;  
-
-168.	            ptr = ptr->next;  
-
-169.	        }  
-
-170.	        preptr->next = ptr -> next;  
-
-171.	        free(ptr);  
-
-172.	        printf("\nnode deleted\n");  
-
-173.	  
-
-174.	    }  
-
-175.	}  
-
-176.	  
-
-177.	void search()  
-
-178.	{  
-
-179.	    struct node *ptr;  
-
-180.	    int item,i=0,flag=1;  
-
-181.	    ptr = head;   
-
-182.	    if(ptr == NULL)  
-
-183.	    {  
-
-184.	        printf("\nEmpty List\n");  
-
-185.	    }  
-
-186.	    else  
-
-187.	    {   
-
-188.	        printf("\nEnter item which you want to search?\n");   
-
-189.	        scanf("%d",&item);  
-
-190.	        if(head ->data == item)  
-
-191.	        {  
-
-192.	        printf("item found at location %d",i+1);  
-
-193.	        flag=0;  
-
-194.	        }  
-
-195.	        else   
-
-196.	        {  
-
-197.	        while (ptr->next != head)  
-
-198.	        {  
-
-199.	            if(ptr->data == item)  
-
-200.	            {  
-
-201.	                printf("item found at location %d ",i+1);  
-
-202.	                flag=0;  
-
-203.	                break;  
-
-204.	            }   
-
-205.	            else  
-
-206.	            {  
-
-207.	                flag=1;  
-
-208.	            }  
-
-209.	            i++;  
-
-210.	            ptr = ptr -> next;  
-
-211.	        }  
-
-212.	        }  
-
-213.	        if(flag != 0)  
-
-214.	        {  
-
-215.	            printf("Item not found\n");  
-
-216.	        }  
-
-217.	    }     
-
-218.	          
-
-219.	}  
-
-220.	  
-
-221.	void display()  
-
-222.	{  
-
-223.	    struct node *ptr;  
-
-224.	    ptr=head;  
-
-225.	    if(head == NULL)  
-
-226.	    {  
-
-227.	        printf("\nnothing to print");  
-
-228.	    }     
-
-229.	    else  
-
-230.	    {  
-
-231.	        printf("\n printing values ... \n");  
-
-232.	          
-
-233.	        while(ptr -> next != head)  
-
-234.	        {  
-
-235.	          
-
-236.	            printf("%d\n", ptr -> data);  
-
-237.	            ptr = ptr -> next;  
-
-238.	        }  
-
-239.	        printf("%d\n", ptr -> data);  
-
-240.	    }  
-
-241.	              
-
-242.	}  
+  inorder(root);
